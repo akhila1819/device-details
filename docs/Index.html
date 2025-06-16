@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Send Device Info</title>
+</head>
+<body>
+<h2>Send Device Info</h2>
+<p>This page will collect your device details and send it via email.</p>
+
+<button id="sendBtn">Send Device Info</button>
+
+<script>
+async function getDeviceInfo() {
+  return {
+    userAgent: navigator.userAgent,
+    platform: navigator.platform,
+    language: navigator.language,
+    vendor: navigator.vendor,
+    screenWidth: window.screen.width,
+    screenHeight: window.screen.height,
+    timestamp: new Date().toISOString()
+  };
+}
+
+async function sendDeviceInfo() {
+  const info = await getDeviceInfo();
+  const body = `
+    User Agent: ${info.userAgent}
+    Platform: ${info.platform}
+    Language: ${info.language}
+    Vendor: ${info.vendor}
+    Screen: ${info.screenWidth}x${info.screenHeight}
+    Time: ${info.timestamp}
+  `;
+
+  // Replace the URL below with your email endpoint
+  const emailApiUrl = 'https://formspree.io/f/your-form-id'; // Example Formspree URL
+
+  try {
+    const response = await fetch(emailApiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        _subject: "Device Info from NFC Scan",
+        message: body,
+        _replyto: "user@example.com" // Optional
+      })
+    });
+
+    if (response.ok) {
+      alert("Device info sent successfully!");
+    } else {
+      alert("Failed to send device info.");
+    }
+  } catch (error) {
+    alert("Error sending device info: " + error.message);
+  }
+}
+
+document.getElementById('sendBtn').addEventListener('click', sendDeviceInfo);
+</script>
+
+</body>
+</html>
